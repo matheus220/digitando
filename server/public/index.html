@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+    <title>Digitando...</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+Tamma+2&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="inbox">
+        <div class="inbox__people">
+          <h4 class="inbox__people__title">USUÁRIOS ATIVOS</h4>
+        </div>
+        <div class="inbox__messages">
+          <div class="messages__history">
+            <div class="history_loading">
+              <div class="loading"></div>
+            </div>
+          </div>
+          <form class="message_form">
+            <div class="fallback"></div>
+            <input
+              type="text"
+              class="message_form__input"
+              placeholder="Escreva uma mensagem"
+            />
+            <div class="actions_container">
+              <div class="clear_image_input">
+                <i class="material-icons">clear</i>
+              </div>
+              <div class="input_img_group">
+                <input
+                  type="file"
+                  id="img"
+                  accept="image/*"
+                  class="message_img__input"
+                />
+                <label for="img"><i class="material-icons">image</i></label>
+              </div>
+              <button class="message_form__button" type="submit">
+                ENVIAR
+              </button>
+            </div>
+            <div class="loading_container">
+              <div class="loading"></div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>

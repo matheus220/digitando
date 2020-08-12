@@ -1,2 +1,5 @@
 node_modules
 *.pem
+.env
+.env.production
+.env.development
