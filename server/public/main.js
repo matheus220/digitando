@@ -1,4 +1,8 @@
+// ========== Establish a WebSocket connection ==========
+
 const socket = io();
+
+// ========== References to HTML elements ==========
 
 const inboxPeople = document.querySelector(".inbox__people");
 const inputField = document.querySelector(".message_form__input");
@@ -6,77 +10,23 @@ const inputImgField = document.querySelector(".message_img__input");
 const messageForm = document.querySelector(".message_form");
 const messageBox = document.querySelector(".messages__history");
 const fallback = document.querySelector(".fallback");
-
 const inputImgGroup = document.querySelector(".input_img_group");
 const clearImageInputButton = document.querySelector(".clear_image_input");
-
 const actionsContainer = document.querySelector(".actions_container");
 const loadingContainer = document.querySelector(".loading_container");
 
+// ========== Global variables ==========
+
 let userName = "";
 
-axios
-  .get("/message")
-  .then(function (response) {
-    if (response.data) {
-      const { data } = response;
+// ========== General functions ==========
 
-      data.map((message) => addNewMessage(message));
-    }
-  })
-  .catch(function (error) {
-    console.log(error);
-  })
-  .finally(() => {
-    const historyLoading = document.querySelector(".history_loading");
-    historyLoading.style.display = "none";
-  });
-
-function loadedImage(imageCode) {
+function handleLoadedImage(imageCode) {
   document.getElementById(imageCode).remove();
   messageBox.scrollTop = messageBox.scrollHeight;
 }
 
-const toggleLoading = () => {
-  if (actionsContainer.style.display === "none") {
-    actionsContainer.style.display = "flex";
-    loadingContainer.style.display = "none";
-    inputField.disabled = false;
-  } else {
-    actionsContainer.style.display = "none";
-    loadingContainer.style.display = "flex";
-    inputField.disabled = true;
-  }
-};
-
-const newUserConnected = (user) => {
-  let storedUsername = sessionStorage.getItem("@digitando_username");
-
-  if (storedUsername) {
-    userName = storedUsername;
-  } else {
-    userName = user || `Usuário${Math.floor(Math.random() * 10000)}`;
-    sessionStorage.setItem("@digitando_username", userName);
-  }
-
-  socket.emit("new user", userName);
-  addToUsersBox(userName);
-};
-
-const addToUsersBox = (userName) => {
-  if (!!document.querySelector(`.${userName}-userlist`)) {
-    return;
-  }
-
-  const userBox = `
-    <div class="chat_ib ${userName}-userlist">
-      <h4>${userName}</h4>
-    </div>
-  `;
-  inboxPeople.innerHTML += userBox;
-};
-
-const addNewMessage = ({ username, message, image, date }) => {
+const displayNewMessage = ({ username, message, image, date }) => {
   const time = new Date(parseInt(date));
   const formattedTime = time.toLocaleString("pt-BR", {
     hour: "numeric",
@@ -89,7 +39,7 @@ const addNewMessage = ({ username, message, image, date }) => {
     let loading = `<div id="${imageCode}" class="image_loading"><div class="loading"></div></div>`;
     messageContent += `
       <div class="image_container">
-        <img src="${image}" onload="loadedImage(${imageCode})" />
+        <img src="${image}" onload="handleLoadedImage(${imageCode})" />
         ${loading}
       </div>`;
   }
@@ -128,14 +78,75 @@ const addNewMessage = ({ username, message, image, date }) => {
   messageBox.scrollTop = messageBox.scrollHeight;
 };
 
-// new user is created so we generate nick name and emit event
+const addToUsersBox = (userName) => {
+  if (!!document.querySelector(`.${userName}-userlist`)) {
+    return;
+  }
+
+  const userBox = `
+    <div class="chat_ib ${userName}-userlist">
+      <h4>${userName}</h4>
+    </div>
+  `;
+  inboxPeople.innerHTML += userBox;
+};
+
+const newUserConnected = (user) => {
+  let storedUsername = sessionStorage.getItem("@digitando_username");
+
+  if (storedUsername) {
+    userName = storedUsername;
+  } else {
+    userName = user || `Usuário${Math.floor(Math.random() * 10000)}`;
+    sessionStorage.setItem("@digitando_username", userName);
+  }
+
+  socket.emit("new user", userName);
+  addToUsersBox(userName);
+};
+
+const toggleLoadingMessageSending = () => {
+  if (actionsContainer.style.display === "none") {
+    actionsContainer.style.display = "flex";
+    loadingContainer.style.display = "none";
+    inputField.disabled = false;
+  } else {
+    actionsContainer.style.display = "none";
+    loadingContainer.style.display = "flex";
+    inputField.disabled = true;
+  }
+};
+
+// ========== Initial settings ==========
+
+// Get previous messages
+axios
+  .get("/message")
+  .then(function (response) {
+    if (response.data) {
+      const { data } = response;
+
+      data.map((message) => displayNewMessage(message));
+    }
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+  .finally(() => {
+    const historyLoading = document.querySelector(".history_loading");
+    historyLoading.style.display = "none";
+  });
+
+// Manage a new user's connection
 newUserConnected();
+
+// ========== JavaScript DOM Event Listeners ==========
 
 messageForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
   if (inputImgField.files.length > 0) {
-    toggleLoading();
+    toggleLoadingMessageSending();
     const image = inputImgField.files[0];
 
     const message = inputField.value ? inputField.value : null;
@@ -172,7 +183,7 @@ messageForm.addEventListener("submit", (e) => {
       .finally(() => {
         clearImageInputButton.style.display = "none";
         inputImgGroup.style.display = "flex";
-        toggleLoading();
+        toggleLoadingMessageSending();
       });
 
     return;
@@ -216,6 +227,8 @@ inputField.addEventListener("keyup", () => {
   });
 });
 
+// ========== Socket IO Listeners ==========
+
 socket.on("new user", function (data) {
   data.map((user) => addToUsersBox(user));
 });
@@ -225,7 +238,7 @@ socket.on("user disconnected", function (userName) {
 });
 
 socket.on("chat message", function (data) {
-  addNewMessage(data);
+  displayNewMessage(data);
 });
 
 socket.on("typing", function (data) {

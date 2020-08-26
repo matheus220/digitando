@@ -1,5 +1,6 @@
 const { Client } = require("pg");
 
+// Create table in the database if it does not exist
 (async () => {
   try {
     let client = new Client();
@@ -17,6 +18,7 @@ const { Client } = require("pg");
   }
 })();
 
+// Functions for interacting with the database
 module.exports = {
   getAllMessages: async () => {
     try {
