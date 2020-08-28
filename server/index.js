@@ -8,9 +8,10 @@ var upload = require("./routes/upload");
 
 // App setup
 const app = express();
-const server = app.listen(process.env.SERVER_PORT, function () {
-  console.log(`Listening on port ${process.env.SERVER_PORT}`);
-  console.log(`http://localhost:${process.env.SERVER_PORT}`);
+const SERVER_PORT = 5000;
+const server = app.listen(SERVER_PORT, function () {
+  console.log(`Listening on port ${SERVER_PORT}`);
+  console.log(`http://localhost:${SERVER_PORT}`);
 });
 
 // Routes
