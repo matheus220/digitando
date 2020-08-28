@@ -38,7 +38,7 @@ Abaixo é apresentado um diagrama que resume a infraestrutura do projeto.
 
 Para o deploy é necessário primeiramente criar uma instância do banco de dados na Amazon RDS e configurar um bucket para armazenar as imagens na Amazon S3.
 
-Em seguida, uma nova instância deve ser criada na Amazon EC2 e, então, esse repositório deve ser clonado dentro dela.
+Em seguida, uma nova instância deve ser criada na Amazon EC2 e, então, este repositório deve ser clonado dentro dela.
 
 ```sh
 git clone https://github.com/matheus220/digitando.git
