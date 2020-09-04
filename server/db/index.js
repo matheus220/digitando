@@ -26,7 +26,7 @@ module.exports = {
 
       await client.connect();
 
-      const subquery = "SELECT * FROM messages ORDER BY date DESC LIMIT 50";
+      const subquery = "SELECT * FROM messages ORDER BY date DESC LIMIT 100";
       const query = `SELECT * FROM (${subquery}) as msgs ORDER BY date`;
 
       const res = await client.query(query);
